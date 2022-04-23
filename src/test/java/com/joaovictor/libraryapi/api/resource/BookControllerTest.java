@@ -15,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -142,6 +147,126 @@ public class BookControllerTest {
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Deve deletar um livro.")
+    public void deleteBookTest() throws Exception {
+        //cenario
+        Long id = 1L;
+        BDDMockito.given(this.service.getById(Mockito.anyLong())).willReturn(Optional.of(Book.builder().id(id).build()));
+
+        //execucao (when)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + 1));
+
+        mvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve retornar resource not found quando não encontrar um livro para deletar.")
+    public void deleteInexistentBookTest() throws Exception {
+        //cenario
+        BDDMockito.given(this.service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        //execucao (when)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" + 1));
+
+        mvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro.")
+    public void updateBookTest() throws Exception {
+        //cenario
+        Long id = 1L;
+        String json = new ObjectMapper().writeValueAsString(createNewBookDTO());
+
+        Book updatingBook = Book.builder()
+                .id(id)
+                .title("Some title")
+                .author("Some author")
+                .isbn("321")
+                .build();
+        BDDMockito.given(this.service.getById(Mockito.anyLong())).willReturn(Optional.of(updatingBook));
+
+        Book updatedBook = Book.builder()
+                .id(id)
+                .title("As Aventuras")
+                .author("Artur")
+                .isbn("321")
+                .build();
+        BDDMockito.given(this.service.update(updatingBook)).willReturn(updatedBook);
+
+        //execucao (when)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value(createNewBookDTO().getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("author").value(createNewBookDTO().getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value("321"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar resource not found ao tentar atualizar um livro inexistente.")
+    public void updateBookInexistentTest() throws Exception {
+        //cenario
+        String json = new ObjectMapper().writeValueAsString(createNewBookDTO());
+        BDDMockito.given(this.service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        //execucao (when)
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve filtrar livros.")
+    public void findBooksTest() throws Exception {
+        Long id = 1L;
+
+        Book book = Book.builder()
+                .id(id)
+                .title(createNewBook().getTitle())
+                .author(createNewBook().getAuthor())
+                .isbn(createNewBook().getIsbn())
+                .build();
+
+        BDDMockito.given(this.service.find(Mockito.any(Book.class), Mockito.any(Pageable.class)))
+                .willReturn(new PageImpl<Book>(List.of(book), PageRequest.of(0, 100), 1));
+
+        String queryString = String.format("?title=%s&author=%s&page=0&size=100", book.getTitle(), book.getAuthor());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("totalElements").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("pageable.pageSize").value(100))
+                .andExpect(MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0));
+    }
+
 
     private Book createNewBook() {
         return Book.builder().id(1L).title("As Aventuras").author("Artur").isbn("001").build();

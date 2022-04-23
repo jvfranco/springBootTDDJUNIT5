@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest //utiliza o banco H2 para realização dos testes
@@ -48,6 +50,42 @@ public class BookRepositoryTest {
 
         //verificacao
         Assertions.assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve obter um livro por Id.")
+    public void findByIdTest() {
+        Book book = createNewBook();
+        testEntityManager.persist(book);
+
+        Optional<Book> optionalBook = this.bookRepository.findById(book.getId());
+
+        Assertions.assertThat(optionalBook.isPresent()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve salvar um livro.")
+    public void saveBookTest() {
+        Book book = createNewBook();
+
+        Book savedBook = this.bookRepository.save(book);
+
+        Assertions.assertThat(savedBook.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro.")
+    public void deleteBookTest() {
+        Book book = createNewBook();
+        testEntityManager.persist(book);
+
+        Book bookFounded = testEntityManager.find(Book.class, book.getId());
+
+        this.bookRepository.delete(bookFounded);
+
+        Book deletedFounded = testEntityManager.find(Book.class, book.getId());
+
+        Assertions.assertThat(deletedFounded).isNull();
     }
 
     private Book createNewBook() {
