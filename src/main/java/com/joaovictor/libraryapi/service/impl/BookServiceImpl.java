@@ -6,6 +6,8 @@ import com.joaovictor.libraryapi.service.BookService;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BookServiceImpl implements BookService {
 
@@ -21,6 +23,11 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("Isbn já cadastrado.");
         }
         return this.bookRepository.save(book);
+    }
+
+    @Override
+    public Optional<Book> getById(Long id) {
+        return Optional.empty();
     }
 
 }
