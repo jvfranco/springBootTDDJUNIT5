@@ -1,17 +1,15 @@
 package com.joaovictor.libraryapi.api.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joaovictor.libraryapi.api.dto.BookDTO;
-import com.joaovictor.libraryapi.api.model.entity.Book;
-import com.joaovictor.libraryapi.api.service.BookService;
+import com.joaovictor.libraryapi.model.entity.Book;
+import com.joaovictor.libraryapi.service.BookService;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

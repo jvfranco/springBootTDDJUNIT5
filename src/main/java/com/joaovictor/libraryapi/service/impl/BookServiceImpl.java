@@ -1,10 +1,9 @@
-package com.joaovictor.libraryapi.api.service.impl;
+package com.joaovictor.libraryapi.service.impl;
 
-import com.joaovictor.libraryapi.api.model.entity.Book;
-import com.joaovictor.libraryapi.api.model.repository.BookRepository;
-import com.joaovictor.libraryapi.api.service.BookService;
+import com.joaovictor.libraryapi.model.entity.Book;
+import com.joaovictor.libraryapi.model.repository.BookRepository;
+import com.joaovictor.libraryapi.service.BookService;
 import com.joaovictor.libraryapi.exception.BusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

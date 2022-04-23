@@ -1,16 +1,15 @@
 package com.joaovictor.libraryapi.service;
 
-import com.joaovictor.libraryapi.api.model.entity.Book;
-import com.joaovictor.libraryapi.api.model.repository.BookRepository;
-import com.joaovictor.libraryapi.api.service.BookService;
-import com.joaovictor.libraryapi.api.service.impl.BookServiceImpl;
+import com.joaovictor.libraryapi.model.entity.Book;
+import com.joaovictor.libraryapi.model.repository.BookRepository;
+import com.joaovictor.libraryapi.service.BookService;
+import com.joaovictor.libraryapi.service.impl.BookServiceImpl;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;

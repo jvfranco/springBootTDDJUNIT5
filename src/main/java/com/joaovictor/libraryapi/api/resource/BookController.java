@@ -2,9 +2,8 @@ package com.joaovictor.libraryapi.api.resource;
 
 import com.joaovictor.libraryapi.api.dto.BookDTO;
 import com.joaovictor.libraryapi.api.exception.ApiErrors;
-import com.joaovictor.libraryapi.api.model.entity.Book;
-import com.joaovictor.libraryapi.api.service.BookService;
-import com.joaovictor.libraryapi.api.service.impl.BookServiceImpl;
+import com.joaovictor.libraryapi.model.entity.Book;
+import com.joaovictor.libraryapi.service.BookService;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

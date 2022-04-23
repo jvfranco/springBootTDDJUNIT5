@@ -1,6 +1,6 @@
-package com.joaovictor.libraryapi.api.model.repository;
+package com.joaovictor.libraryapi.model.repository;
 
-import com.joaovictor.libraryapi.api.model.entity.Book;
+import com.joaovictor.libraryapi.model.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
