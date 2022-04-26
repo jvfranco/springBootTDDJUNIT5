@@ -32,7 +32,7 @@ import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")     // Roda os testes somente no contexto de teste
-@WebMvcTest                 // testa somente o comportamento da api
+@WebMvcTest(controllers = BookController.class)  // testa somente o comportamento da api, controllers para indicar que somente deve instanciar determinado controller
 @AutoConfigureMockMvc       // Faz uma configuração para controle da injeção de dependencias
 public class BookControllerTest {
 
