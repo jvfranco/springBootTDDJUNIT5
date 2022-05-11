@@ -2,6 +2,7 @@ package com.joaovictor.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joaovictor.libraryapi.api.dto.LoanDTO;
+import com.joaovictor.libraryapi.api.dto.ReturnedLoanDTO;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import com.joaovictor.libraryapi.model.entity.Book;
 import com.joaovictor.libraryapi.model.entity.Loan;
@@ -107,6 +108,47 @@ public class LoanControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest() )
                 .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value("Book já emprestado."));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um livro.")
+    public void returnBookTest() throws Exception {
+        //cenario ( returned: true )
+        ReturnedLoanDTO dto = ReturnedLoanDTO.builder().returned(true).build();
+        Loan loan = Loan.builder().id(1L).build();
+
+        BDDMockito.given(loanService.getById(Mockito.anyLong()))
+                .willReturn(Optional.of(loan));
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+                MockMvcRequestBuilders.patch(LOAN_API.concat("/1"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(loanService, Mockito.times(1)).update(loan);
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 quando tentar devolver um livro inexistente.")
+    public void returnNonExistentBookTest() throws Exception {
+        //cenario ( returned: true )
+        ReturnedLoanDTO dto = ReturnedLoanDTO.builder().returned(true).build();
+
+        BDDMockito.given(loanService.getById(Mockito.anyLong()))
+                .willReturn(Optional.empty());
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        mvc.perform(
+                MockMvcRequestBuilders.patch(LOAN_API.concat("/1"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+        ).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
 }
