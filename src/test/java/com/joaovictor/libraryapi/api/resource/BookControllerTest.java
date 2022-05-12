@@ -2,9 +2,9 @@ package com.joaovictor.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joaovictor.libraryapi.api.dto.BookDTO;
+import com.joaovictor.libraryapi.exception.BusinessException;
 import com.joaovictor.libraryapi.model.entity.Book;
 import com.joaovictor.libraryapi.service.BookService;
-import com.joaovictor.libraryapi.exception.BusinessException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -220,7 +219,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Deve retornar resource not found ao tentar atualizar um livro inexistente.")
-    public void updateBookInexistentTest() throws Exception {
+    public void updateBookNonExistentTest() throws Exception {
         //cenario
         String json = new ObjectMapper().writeValueAsString(createNewBookDTO());
         BDDMockito.given(this.service.getById(Mockito.anyLong())).willReturn(Optional.empty());

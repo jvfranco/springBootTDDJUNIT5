@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/books")
 public class BookController {
 
-    private BookService bookService;
-    private ModelMapper modelMapper;
+    private final BookService bookService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public BookController(BookService bookService, ModelMapper modelMapper) {

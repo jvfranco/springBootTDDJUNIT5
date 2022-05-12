@@ -1,5 +1,7 @@
 package com.joaovictor.libraryapi.service;
 
+import com.joaovictor.libraryapi.api.dto.LoanDTO;
+import com.joaovictor.libraryapi.api.dto.LoanFilterDTO;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import com.joaovictor.libraryapi.model.entity.Book;
 import com.joaovictor.libraryapi.model.entity.Loan;
@@ -10,18 +12,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-class LoanServiceTest {
+public class LoanServiceTest {
 
     @MockBean
     private LoanRepository repository;
@@ -54,7 +60,7 @@ class LoanServiceTest {
     @Test
     @DisplayName("Deve lançar um erro de negócio ao salvar um empréstimo com livro já emprestado.")
     public void loanedBookTest() {
-        Loan loanSaving = this.createLoan();
+        Loan loanSaving = createLoan();
 
         Mockito.when(repository.existsByBookAndNotReturned(loanSaving.getBook())).thenReturn(true);
 
@@ -71,7 +77,7 @@ class LoanServiceTest {
     public void getLoanDetailsTest() {
         //cenario
         Long id = 1L;
-        Loan loan = this.createLoan();
+        Loan loan = createLoan();
         loan.setId(id);
 
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(loan));
@@ -93,7 +99,7 @@ class LoanServiceTest {
     @DisplayName("Deve atualizar um empréstimo.")
     public void updateLoanTest() {
         Long id = 1L;
-        Loan loan = this.createLoan();
+        Loan loan = createLoan();
         loan.setId(id);
         loan.setReturned(true);
 
@@ -105,7 +111,32 @@ class LoanServiceTest {
         Mockito.verify(repository).save(loan);
     }
 
-    private Loan createLoan() {
+    @Test
+    @DisplayName("Deve filtrar empréstimos pelas propriedades.")
+    public void findLoanTest() {
+        Long id = 1L;
+        LoanFilterDTO loanFilterDTO = LoanFilterDTO.builder().customer("Fulano").isbn("321").build();
+        Loan loan = createLoan();
+        loan.setId(id);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Loan> lista = List.of(loan);
+        Page<Loan> page = new PageImpl<Loan>(lista, pageRequest, lista.size());
+        Mockito.when(this.repository.findByBookIsbnOrCustomer(
+                Mockito.any(String.class),
+                Mockito.any(String.class),
+                Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        Page<Loan> result = this.loanService.find(loanFilterDTO, pageRequest);
+
+        Assertions.assertThat(result.getTotalElements()).isEqualTo(1);
+        Assertions.assertThat(result.getContent()).isEqualTo(lista);
+        Assertions.assertThat(result.getPageable().getPageNumber()).isEqualTo(0);
+        Assertions.assertThat(result.getPageable().getPageSize()).isEqualTo(10);
+    }
+
+    public static Loan createLoan() {
         Book book = Book.builder().id(1L).build();
         return Loan.builder().book(book).customer("Fulano").loanDate(LocalDate.now()).build();
     }
