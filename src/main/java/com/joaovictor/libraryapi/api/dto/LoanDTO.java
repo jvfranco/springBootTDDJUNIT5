@@ -15,4 +15,5 @@ public class LoanDTO {
     private String isbn;
     private String custumer;
     private BookDTO book;
+    private String customerEmail;
 }
