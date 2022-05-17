@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 @Tag(name = "Book API")
+@Slf4j
 public class BookController {
 
     private final BookService bookService;
@@ -45,7 +47,7 @@ public class BookController {
                 .author(bookDTO.getAuthor())
                 .isbn(bookDTO.getIsbn())
                 .build();*/
-
+        log.info("CREATE A BOOK FOR ISBN: {} ", bookDTO.getIsbn());
         Book book = this.modelMapper.map(bookDTO, Book.class);
 
         book = this.bookService.save(book);
@@ -64,6 +66,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "OBTAINS A BOOK DETAILS BY ID")
     public BookDTO get(@PathVariable Long id) {
+        log.info("OBTAINING DETAILS FOR BOOK ID: {} ", id);
         return this.bookService
                 .getById(id)
                 .map(book -> this.modelMapper.map(book, BookDTO.class))
