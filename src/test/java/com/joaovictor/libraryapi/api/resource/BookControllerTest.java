@@ -5,6 +5,7 @@ import com.joaovictor.libraryapi.api.dto.BookDTO;
 import com.joaovictor.libraryapi.exception.BusinessException;
 import com.joaovictor.libraryapi.model.entity.Book;
 import com.joaovictor.libraryapi.service.BookService;
+import com.joaovictor.libraryapi.service.LoanService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ public class BookControllerTest {
 
     @MockBean // mock especializado, utilizado pelo spring para instanciar o objeto
     BookService service;
+
+    @MockBean
+    LoanService loanService;
 
     @Test
     @DisplayName("Deve criar um livro com sucesso.")
