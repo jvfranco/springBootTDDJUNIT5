@@ -6,6 +6,10 @@ import com.joaovictor.libraryapi.model.entity.Book;
 import com.joaovictor.libraryapi.model.entity.Loan;
 import com.joaovictor.libraryapi.service.BookService;
 import com.joaovictor.libraryapi.service.LoanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
+@Tag(name = "Book API")
 public class BookController {
 
     private final BookService bookService;
@@ -30,6 +35,10 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "CREATE A BOOK")
+    @ApiResponses(
+            @ApiResponse(responseCode = "201", description = "Book created")
+    )
     public BookDTO create(@RequestBody @Valid BookDTO bookDTO) {
         /*Book book = Book.builder()
                 .title(bookDTO.getTitle())
@@ -53,6 +62,7 @@ public class BookController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "OBTAINS A BOOK DETAILS BY ID")
     public BookDTO get(@PathVariable Long id) {
         return this.bookService
                 .getById(id)
